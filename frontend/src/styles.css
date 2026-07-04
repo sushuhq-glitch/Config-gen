@@ -54,7 +54,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
   padding: 14px 28px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-panel);
@@ -102,7 +103,11 @@ body {
 
 /* ------------------------------------------------------------- layout */
 .main { flex: 1; display: grid; grid-template-columns: 340px 1fr; gap: 20px; padding: 20px 28px; max-width: 1600px; width: 100%; margin: 0 auto; }
-@media (max-width: 980px) { .main { grid-template-columns: 1fr; padding: 14px; } }
+@media (max-width: 980px) {
+  .main { grid-template-columns: 1fr; padding: 14px; }
+  .topbar { padding: 12px 14px; }
+  .brand span { display: none; }
+}
 
 .panel {
   background: var(--bg-panel); border: 1px solid var(--border);
