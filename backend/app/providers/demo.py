@@ -411,13 +411,20 @@ class DemoProvider(DataProvider):
         p_home_scores = 1 - _poisson_pmf(lam_h, 0)
         p_away_scores = 1 - _poisson_pmf(lam_a, 0)
         p_home_m1 = sum(joint[i][j] for i in range(max_g) for j in range(max_g) if i - j >= 2)
-        p_away_p1 = 1 - p_home_m1 - sum(joint[i][j] for i in range(max_g) for j in range(max_g) if i - j == 1)
+        p_away_p1 = 1 - p_home_m1  # away +1.5 wins unless home wins by 2+
         p_dnb_home = p_home / (p_home + p_away)
         p_dnb_away = 1 - p_dnb_home
 
-        corners_lam = 9.6 + (lam_h + lam_a - 2.6) * 1.4
+        # Price corners/cards off the same form and referee expectations the
+        # simulator uses, so demo market prices stay coherent with the model.
+        fx = self._fixture(fixture_id)
+        home, away = self._team(fx.home_team_id), self._team(fx.away_team_id)
+        f10h, f10a = self._form(home, 10), self._form(away, 10)
+        ref = self._referee(fx)
+        corners_lam = (f10h.corners_for + f10a.corners_for) * 0.9
         p_corn_over = 1 - sum(_poisson_pmf(corners_lam, k) for k in range(10))
-        cards_lam = 4.1
+        cards_lam = min(10, max(1.5, ref.avg_yellow_cards * 1.02
+                                + (f10h.cards_for + f10a.cards_for) * 0.25))
         p_cards_over = 1 - sum(_poisson_pmf(cards_lam, k) for k in range(5))
 
         defs = [
